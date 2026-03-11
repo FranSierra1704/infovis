@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Trabajos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & base ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:    #0d0d0d;
+      --paper:  #f5f0e8;
+      --cream:  #ede8dc;
+      --accent: #e85d26;
+      --teal:   #1a6b6b;
+      --gold:   #c49a2a;
+      --muted:  #7a7060;
+      --line:   #ccc5b5;
+      --card:   #ffffff;
+      --r: 4px;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    /* ── Original content ───────────────────────────────────── */
+    .original-section {
+      padding: 2rem 2.5rem;
+      border-bottom: 2px solid var(--line);
+    }
+    .original-section h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--ink);
+    }
+
+    /* ── Story wrapper ──────────────────────────────────────── */
+    #story {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── Hero ───────────────────────────────────────────────── */
+    .story-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      padding: 4rem 0 5rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-text h2 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .hero-text h2 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-text p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 1.2rem;
+      max-width: 380px;
+      line-height: 1.7;
+    }
+    .hero-stat {
+      text-align: right;
+    }
+    .hero-stat .big-num {
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .hero-stat .big-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.4rem;
+    }
+    .hero-stat .big-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--teal);
+      margin-top: 0.6rem;
+      font-weight: 500;
+    }
+
+    /* ── Section labels ─────────────────────────────────────── */
+    .chapter {
+      padding: 4rem 0 1.5rem;
+    }
+    .chapter-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .chapter-tag::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.3;
+    }
+    .chapter h3 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .chapter p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.7rem;
+      max-width: 650px;
+      line-height: 1.8;
+    }
+
+    /* ── Chart cards ────────────────────────────────────────── */
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 1.8rem;
+      margin-top: 1.5rem;
+      position: relative;
+    }
+    .chart-card .chart-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+    .chart-card canvas {
+      max-height: 340px;
+    }
+
+    /* ── Two-col grid ───────────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 1.5rem;
+    }
+
+    /* ── Stat pills row ─────────────────────────────────────── */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .pill {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 1rem 1.4rem;
+      flex: 1 1 160px;
+    }
+    .pill .p-val {
+      font-size: 1.7rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .pill .p-val.accent { color: var(--accent); }
+    .pill .p-val.teal   { color: var(--teal); }
+    .pill .p-val.gold   { color: var(--gold); }
+    .pill .p-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Mobile timeline ────────────────────────────────────── */
+    .timeline {
+      position: relative;
+      margin-top: 1.5rem;
+      padding-left: 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--line);
+    }
+    .tl-item {
+      position: relative;
+      padding: 0.6rem 0 0.6rem 1rem;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -1.55rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 2px solid var(--line);
+    }
+    .tl-item.highlight::before {
+      background: var(--accent);
+      border-color: var(--accent);
+      width: 14px;
+      height: 14px;
+      left: -1.73rem;
+    }
+    .tl-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .tl-mes {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-width: 120px;
+    }
+    .tl-val {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .tl-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--cream);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .tl-bar {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+    .tl-item.highlight .tl-bar { background: var(--accent); }
+    .tl-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-top: 0.15rem;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 680px) {
+      .story-hero { grid-template-columns: 1fr; }
+      .hero-stat  { text-align: left; }
+      .two-col    { grid-template-columns: 1fr; }
+    }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+    .story-divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 3rem 0 0;
+    }
+
+    /* ── Tooltip custom ─────────────────────────────────────── */
+    .annotation {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.8rem;
+      padding: 0.7rem 1rem;
+      border-left: 3px solid var(--accent);
+      background: var(--cream);
+    }
+    .annotation strong { color: var(--ink); font-style: normal; }
+
+    /* ── Footer ─────────────────────────────────────────────── */
+    .story-footer {
+      border-top: 2px solid var(--ink);
+      padding-top: 2rem;
+      margin-top: 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .story-footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     CONTENIDO ORIGINAL
+══════════════════════════════════════════ -->
+<div class="original-section">
+  <h1>RAWGraph</h1>
+  <img src="" alt="">
+
+  <h1>CLASE 1</h1>
+  <object type="image/svg+xml" data="https://fransierra1704.github.io/infovis/infovis.svg"></object>
+
+  <h1>CLASE 2 - FLORENCE NIGHTINGALE STACKED AREA CHART</h1>
+  <div class="flourish-embed flourish-chart" data-src="visualisation/27939070">
+    <script src="https://public.flourish.studio/resources/embed.js"></script>
+    <noscript><img src="https://public.flourish.studio/visualisation/27939070/thumbnail" width="100%" alt="visualization" /></noscript>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     STORYTELLING — FACTURAS PERSONAL FLOW
+══════════════════════════════════════════ -->
+<div style="background: var(--paper); border-top: 3px solid var(--ink);">
+<div id="story">
+
+  <!-- ── TAG ─────────────────────────────────────── -->
+  <div style="padding-top:2rem;">
+    <div class="chapter-tag">CLASE 3 — Storytelling con datos reales</div>
+    <div style="font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);">
+      Fuente: Facturas Personal Flow (Telecom Argentina) · Abril 2025 — Marzo 2026
+    </div>
+  </div>
+
+  <!-- ── HERO ─────────────────────────────────────── -->
+  <div class="story-hero">
+    <div class="hero-text">
+      <h2>Un año de<br>facturas.<br><em>¿Cuánto subió</em><br>la cuenta?</h2>
+      <p>
+        Entre abril de 2025 y marzo de 2026, la factura mensual de servicios de
+        telecomunicaciones creció un <strong>225%</strong>. Esta es la historia de
+        cómo pasó — mes a mes, servicio a servicio.
+      </p>
+    </div>
+    <div class="hero-stat">
+      <div class="big-num">$131k</div>
+      <div class="big-label">Factura de Marzo 2026</div>
+      <div class="big-sub">vs. $40k en Abril 2025</div>
+      <div style="margin-top:1.5rem;">
+        <div class="big-num" style="font-size:clamp(1.8rem,3vw,2.8rem);color:var(--teal);">$1.051.272</div>
+        <div class="big-label">Total acumulado en 12 meses</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════
+       CAP. 1 — EVOLUCIÓN
+  ══════════════════════════ -->
+  <div class="chapter">
+    <div class="chapter-tag">01 — El arco completo</div>
+    <h3>Una línea que no para de subir<br>— con un quiebre en noviembre</h3>
+    <p>
+      La curva de gasto tiene dos etapas bien marcadas: un crecimiento gradual de
+      abril a octubre, y un salto abrupto en noviembre cuando se incorporaron cuatro
+      líneas móviles al plan.
+    </p>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Factura total mensual (ARS) · Eje Y en miles</div>
+    <canvas id="chartTotal"></canvas>
+  </div>
+  <div class="annotation">
+    <strong>Noviembre 2025:</strong> la factura saltó de $57.421 a $120.246 (+109%) al sumar
+    cuatro líneas móviles (Plan 4 GB) con descuentos del 55–60%. El descuento de conexión
+    también pasó de $1.000 a $12.000.
+  </div>
+
+  <!-- Pills ─────────────────── -->
+  <div class="pills">
+    <div class="pill">
+      <div class="p-val accent">+225%</div>
+      <div class="p-label">Variación total Abr→Mar</div>
+    </div>
+    <div class="pill">
+      <div class="p-val">$87.590</div>
+      <div class="p-label">Aumento acumulado</div>
+    </div>
+    <div class="pill">
+      <div class="p-val teal">+109%</div>
+      <div class="p-label">Mayor salto mensual (Nov)</div>
+    </div>
+    <div class="pill">
+      <div class="p-val gold">$133.458</div>
+      <div class="p-label">Pico máximo (Feb 2026)</div>
+    </div>
+  </div>
+
+  <hr class="story-divider">
+
+  <!-- ══════════════════════
+       CAP. 2 — COMPOSICIÓN
+  ══════════════════════════ -->
+  <div class="chapter">
+    <div class="chapter-tag">02 — Composición del gasto</div>
+    <h3>¿A dónde va cada peso?</h3>
+    <p>
+      El gráfico apilado muestra cómo cambió la estructura del gasto: al principio dominaba
+      el internet + Flow, luego las líneas móviles pasaron a representar casi la mitad
+      de la factura.
+    </p>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Composición mensual por tipo de servicio (ARS)</div>
+    <canvas id="chartStack"></canvas>
+  </div>
+
+  <div class="two-col" style="margin-top:1.2rem;">
+    <div class="annotation" style="margin-top:0;">
+      <strong>Internet + Flow Full</strong> tuvo un salto en septiembre (cambio de plan, descuento 70%→60%)
+      y otro en marzo 2026 ($53.819 vs $40k previos).
+    </div>
+    <div class="annotation" style="margin-top:0;">
+      <strong>Servicios adicionales</strong> (Pack Fútbol, Flow Box, GBs extra) crecieron de forma
+      constante — el Pack Fútbol pasó de $14.100 a $21.490 en un año.
+    </div>
+  </div>
+
+  <hr class="story-divider">
+
+  <!-- ══════════════════════
+       CAP. 3 — LÍNEAS MÓVILES
+  ══════════════════════════ -->
+  <div class="chapter">
+    <div class="chapter-tag">03 — Las cuatro líneas móviles</div>
+    <h3>Cinco meses de datos, cuatro líneas distintas</h3>
+    <p>
+      Desde noviembre 2025, la síntesis de cargos desglosa cada línea móvil.
+      El gráfico de barras compara el costo total por línea en cada mes.
+    </p>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Costo total por línea móvil (ARS) — Nov 2025 a Mar 2026</div>
+    <canvas id="chartLineas"></canvas>
+  </div>
+  <div class="annotation">
+    <strong>(11)69004409</strong> es la línea que más varió: tuvo $9.500 en servicios adicionales en
+    diciembre y $6.766 en consumo de roaming en Paraguay durante febrero 2026.
+  </div>
+
+  <hr class="story-divider">
+
+  <!-- ══════════════════════
+       CAP. 4 — SERVICIOS ADIC
+  ══════════════════════════ -->
+  <div class="chapter">
+    <div class="chapter-tag">04 — El gasto "invisible"</div>
+    <h3>Los servicios adicionales crecen mes a mes sin parar</h3>
+    <p>
+      Flow Box, Pack Fútbol y GBs extra representan un costo que muchas veces pasa
+      desapercibido. En 12 meses, este ítem creció un 49%.
+    </p>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-title">Evolución servicios adicionales (ARS)</div>
+      <canvas id="chartAdic"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Desglose promedio de adicionales (12 meses)</div>
+      <canvas id="chartDonut"></canvas>
+    </div>
+  </div>
+
+  <hr class="story-divider">
+
+  <!-- ══════════════════════
+       CAP. 5 — IVA
+  ══════════════════════════ -->
+  <div class="chapter">
+    <div class="chapter-tag">05 — Lo que va al fisco</div>
+    <h3>El IVA también creció: de $7.035 a $22.839</h3>
+    <p>
+      El IVA contenido en las facturas refleja fielmente el crecimiento total del gasto.
+      En el año analizado, la carga impositiva mensual se triplicó.
+    </p>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">IVA mensual contenido en la factura (ARS)</div>
+    <canvas id="chartIva"></canvas>
+  </div>
+
+  <hr class="story-divider">
+
+  <!-- ══════════════════════
+       CAP. 6 — LÍNEA DEL TIEMPO
+  ══════════════════════════ -->
+  <div class="chapter">
+    <div class="chapter-tag">06 — Resumen cronológico</div>
+    <h3>Mes a mes, en una sola mirada</h3>
+    <p>
+      Las barras muestran la magnitud relativa de cada factura. Los meses marcados en
+      naranja son los de mayor impacto.
+    </p>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Línea de tiempo de facturas</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- ── Footer ───────────────────────────────────── -->
+  <div class="story-footer">
+    <p>Datos: Facturas Telecom Argentina S.A. · CUIT 30-63945373-8<br>
+       Ref. de pago: 1002874683910006 · Procesado con R + Python</p>
+    <p style="text-align:right;">12 facturas analizadas<br>Abril 2025 — Marzo 2026</p>
+  </div>
+
+</div><!-- /#story -->
+</div><!-- /storytelling wrapper -->
+
+
+<script>
+/* ════════════════════════════════════════════
+   DATOS
+════════════════════════════════════════════ */
+const DATA = [
+  {mes:"Abr 2025", total:40536.98,  internet:24836.99, moviles:0,         serv_adic:16700,   roaming:0,       iva:7035.34,  flowBox:2600,   futbol:14100,  gb:0},
+  {mes:"May 2025", total:41814.99,  internet:25455.01, moviles:0,         serv_adic:17360,   roaming:0,       iva:7257.14,  flowBox:2660,   futbol:14700,  gb:0},
+  {mes:"Jun 2025", total:43593.01,  internet:26703,    moviles:0,         serv_adic:17890.01,roaming:0,       iva:7565.73,  flowBox:2790.01,futbol:15100,  gb:0},
+  {mes:"Jul 2025", total:45039.01,  internet:27372,    moviles:0,         serv_adic:18007,   roaming:330,     iva:7816.69,  flowBox:2860,   futbol:15477,  gb:0},
+  {mes:"Ago 2025", total:45858.99,  internet:28059,    moviles:0,         serv_adic:18800,   roaming:0,       iva:7959,     flowBox:3000,   futbol:15800,  gb:0},
+  {mes:"Sep 2025", total:56329.99,  internet:37980,    moviles:0,         serv_adic:19349.99,roaming:0,       iva:9776.28,  flowBox:3079.99,futbol:16270,  gb:0},
+  {mes:"Oct 2025", total:57421.99,  internet:38552,    moviles:0,         serv_adic:19869.99,roaming:0,       iva:9965.8,   flowBox:3169.99,futbol:16700,  gb:0},
+  {mes:"Nov 2025", total:120246,    internet:39056,    moviles:72476.01,  serv_adic:34950.01,roaming:0,       iva:20867.3,  flowBox:3250,   futbol:17200,  gb:14500.01},
+  {mes:"Dic 2025", total:118287.47, internet:40020,    moviles:69227.5,   serv_adic:30540,   roaming:0,       iva:20527.39, flowBox:3340,   futbol:17700,  gb:9500},
+  {mes:"Ene 2026", total:123338.02, internet:40808,    moviles:72900,     serv_adic:33630.01,roaming:0,       iva:21403.94, flowBox:3400,   futbol:18230,  gb:12000},
+  {mes:"Feb 2026", total:133458.69, internet:42020,    moviles:78968.67,  serv_adic:33970,   roaming:6766.17, iva:23160.42, flowBox:3500,   futbol:20970,  gb:9500},
+  {mes:"Mar 2026", total:131607.5,  internet:53819.99, moviles:64717.51,  serv_adic:25070,   roaming:475,     iva:22839.14, flowBox:3580,   futbol:21490,  gb:0},
+];
+
+const LINEAS_DATA = {
+  labels: ["Nov 2025","Dic 2025","Ene 2026","Feb 2026","Mar 2026"],
+  "69004409": [20976, 24858.5, 21660, 19623.5, 16994.5],
+  "50973350": [20976, 15358.5, 21660, 22123.5, 16519.5],
+  "69386244": [17476.01,15358.5, 15660, 16123.5, 16519.5],
+  "49153965": [13312,  13652,  13920, 21098.17,14684.01],
+};
+
+const MESES  = DATA.map(d => d.mes);
+const TOTALS = DATA.map(d => d.total);
+const MAX_T  = Math.max(...TOTALS);
+
+/* ════════════════════════════════════════════
+   PALETA
+════════════════════════════════════════════ */
+const C = {
+  accent: '#e85d26',
+  teal:   '#1a6b6b',
+  gold:   '#c49a2a',
+  blue:   '#2a5ea8',
+  purple: '#7c4db0',
+  line:   '#ccc5b5',
+  muted:  '#7a7060',
+};
+const fmt = n => '$' + Math.round(n).toLocaleString('es-AR');
+
+/* shared chart defaults */
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size   = 11;
+Chart.defaults.color       = C.muted;
+
+/* ════════════════════════════════════════════
+   CHART 1 — Total line
+════════════════════════════════════════════ */
+new Chart(document.getElementById('chartTotal'), {
+  type: 'line',
+  data: {
+    labels: MESES,
+    datasets: [{
+      label: 'Total factura',
+      data: TOTALS,
+      borderColor: C.accent,
+      backgroundColor: ctx => {
+        const g = ctx.chart.ctx.createLinearGradient(0,0,0,340);
+        g.addColorStop(0,'rgba(232,93,38,0.18)');
+        g.addColorStop(1,'rgba(232,93,38,0)');
+        return g;
+      },
+      borderWidth: 2.5,
+      fill: true,
+      tension: 0.35,
+      pointBackgroundColor: TOTALS.map((v,i) => v === Math.max(...TOTALS) ? C.accent : '#fff'),
+      pointBorderColor: C.accent,
+      pointRadius: TOTALS.map((v,i) => v === Math.max(...TOTALS) ? 7 : 4),
+    }]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ' ' + fmt(ctx.parsed.y),
+        }
+      }
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'k' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+/* ════════════════════════════════════════════
+   CHART 2 — Stacked bar
+════════════════════════════════════════════ */
+new Chart(document.getElementById('chartStack'), {
+  type: 'bar',
+  data: {
+    labels: MESES,
+    datasets: [
+      {
+        label: 'Internet + Flow Full',
+        data: DATA.map(d => d.internet),
+        backgroundColor: C.teal,
+        stack: 'stack',
+      },
+      {
+        label: 'Líneas móviles',
+        data: DATA.map(d => d.moviles),
+        backgroundColor: C.blue,
+        stack: 'stack',
+      },
+      {
+        label: 'Servicios adicionales',
+        data: DATA.map(d => d.serv_adic),
+        backgroundColor: C.gold,
+        stack: 'stack',
+      },
+      {
+        label: 'Roaming / Variables',
+        data: DATA.map(d => d.roaming),
+        backgroundColor: C.purple,
+        stack: 'stack',
+      },
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + fmt(ctx.parsed.y) } }
+    },
+    scales: {
+      y: {
+        stacked: true,
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'k' }
+      },
+      x: { stacked: true, grid: { display: false } }
+    }
+  }
+});
+
+/* ════════════════════════════════════════════
+   CHART 3 — Líneas móviles grouped bar
+════════════════════════════════════════════ */
+new Chart(document.getElementById('chartLineas'), {
+  type: 'bar',
+  data: {
+    labels: LINEAS_DATA.labels,
+    datasets: [
+      { label:'(11) 6900-4409', data: LINEAS_DATA["69004409"], backgroundColor: C.accent },
+      { label:'(11) 5097-3350', data: LINEAS_DATA["50973350"], backgroundColor: C.teal },
+      { label:'(11) 6938-6244', data: LINEAS_DATA["69386244"], backgroundColor: C.gold },
+      { label:'(11) 4915-3965', data: LINEAS_DATA["49153965"], backgroundColor: C.blue },
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + fmt(ctx.parsed.y) } }
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'k' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+/* ════════════════════════════════════════════
+   CHART 4 — Adicionales line
+════════════════════════════════════════════ */
+new Chart(document.getElementById('chartAdic'), {
+  type: 'line',
+  data: {
+    labels: MESES,
+    datasets: [
+      {
+        label: 'Pack Fútbol',
+        data: DATA.map(d => d.futbol),
+        borderColor: C.accent, backgroundColor:'transparent',
+        borderWidth: 2, tension:0.3, pointRadius:3,
+      },
+      {
+        label: 'Flow Box',
+        data: DATA.map(d => d.flowBox),
+        borderColor: C.teal, backgroundColor:'transparent',
+        borderWidth: 2, tension:0.3, pointRadius:3,
+      },
+      {
+        label: 'GBs extra',
+        data: DATA.map(d => d.gb),
+        borderColor: C.gold, backgroundColor:'transparent',
+        borderWidth: 2, tension:0.3, pointRadius:3, borderDash:[4,3],
+      },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + fmt(ctx.parsed.y) } }
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'k' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+/* ════════════════════════════════════════════
+   CHART 5 — Donut adicionales promedio
+════════════════════════════════════════════ */
+const avgFutbol  = DATA.reduce((s,d)=>s+d.futbol,0)/12;
+const avgFlowBox = DATA.reduce((s,d)=>s+d.flowBox,0)/12;
+const avgGb      = DATA.reduce((s,d)=>s+d.gb,0)/12;
+
+new Chart(document.getElementById('chartDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Pack Fútbol','Flow Box','GBs extra'],
+    datasets: [{
+      data: [avgFutbol, avgFlowBox, avgGb],
+      backgroundColor: [C.accent, C.teal, C.gold],
+      borderWidth: 2,
+      borderColor: '#fff',
+    }]
+  },
+  options: {
+    responsive: true,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + fmt(ctx.parsed) + ' prom.' } }
+    }
+  }
+});
+
+/* ════════════════════════════════════════════
+   CHART 6 — IVA
+════════════════════════════════════════════ */
+new Chart(document.getElementById('chartIva'), {
+  type: 'bar',
+  data: {
+    labels: MESES,
+    datasets: [{
+      label: 'IVA contenido',
+      data: DATA.map(d => d.iva),
+      backgroundColor: DATA.map(d =>
+        d.iva === Math.max(...DATA.map(x=>x.iva)) ? C.accent : 'rgba(26,107,107,0.5)'
+      ),
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' IVA: ' + fmt(ctx.parsed.y) } }
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'k' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+/* ════════════════════════════════════════════
+   TIMELINE
+════════════════════════════════════════════ */
+const highlights = new Set([7, 11]); // Nov(idx=7), Feb(idx=11)
+const tlEl = document.getElementById('timeline');
+DATA.forEach((d, i) => {
+  const pct = (d.total / MAX_T * 100).toFixed(1);
+  const isH = highlights.has(i);
+  const div = document.createElement('div');
+  div.className = 'tl-item' + (isH ? ' highlight' : '');
+  div.innerHTML = `
+    <div class="tl-row">
+      <span class="tl-mes">${d.mes}</span>
+      <div class="tl-bar-wrap"><div class="tl-bar" style="width:${pct}%"></div></div>
+      <span class="tl-val">${fmt(d.total)}</span>
+    </div>
+    ${isH ? `<div class="tl-note">▲ ${i===7?'+109% — incorporación de líneas móviles':'+15% — pico máximo + roaming Paraguay'}</div>` : ''}
+  `;
+  tlEl.appendChild(div);
+});
+</script>
+
+</body>
+</html>
