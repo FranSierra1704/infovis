@@ -1,17 +1,16 @@
 <h1>TP1 — Un año de facturas: ¿Cómo se comporto mi gasto?</h1>
 
 <h2>¿Cómo se distribuye mi gasto entre servicios cada mes?</h2>
-<object type="image/svg+xml" data="rawgraphs_alluvial.svg"></object>
+<object type="image/svg+xml" data="https://fransierra1704.github.io/infovis/RAWTP1.svg"></object>
 
 <h2>¿Cuánto creció mi factura mensual a lo largo del año?</h2>
-<div class="flourish-embed" data-src="visualisation/XXXXXXX">
+<div class="flourish-embed flourish-chart" data-src="visualisation/28128739"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/28128739/thumbnail" width="100%" alt="visualization" /></noscript></div>
   <script src="https://public.flourish.studio/resources/embed.js"></script>
 </div>
 
 <h2>¿En qué servicios extras gasto más cada mes?</h2>
 <iframe title="Servicios adicionales" 
-  src="https://datawrapper.dwcdn.net/XXXXX/1/" 
-  scrolling="no" frameborder="0" width="100%" height="400">
+  <div style="min-height:665px" id="datawrapper-vis-FpP0S"><script type="text/javascript" defer src="https://datawrapper.dwcdn.net/FpP0S/embed.js" charset="utf-8" data-target="#datawrapper-vis-FpP0S"></script><noscript><img src="https://datawrapper.dwcdn.net/FpP0S/full.png" alt="COSTO MENSUAL POR SERVICIO (Columnas agrupadas)" /></noscript></div>
 </iframe>
 
 <h2>¿Cuánto paga cada línea móvil y qué incluye?</h2>
