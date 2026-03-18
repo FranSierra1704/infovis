@@ -1,0 +1,18 @@
+<h1>TP1 — Un año de facturas: ¿Cómo se comporto mi gasto?</h1>
+
+<h2>¿Cómo se distribuye mi gasto entre servicios cada mes?</h2>
+<object type="image/svg+xml" data="rawgraphs_alluvial.svg"></object>
+
+<h2>¿Cuánto creció mi factura mensual a lo largo del año?</h2>
+<div class="flourish-embed" data-src="visualisation/XXXXXXX">
+  <script src="https://public.flourish.studio/resources/embed.js"></script>
+</div>
+
+<h2>¿En qué servicios extras gasto más cada mes?</h2>
+<iframe title="Servicios adicionales" 
+  src="https://datawrapper.dwcdn.net/XXXXX/1/" 
+  scrolling="no" frameborder="0" width="100%" height="400">
+</iframe>
+
+<h2>¿Cuánto paga cada línea móvil y qué incluye?</h2>
+<iframe src="TU_LINK_POWERBI" width="100%" height="500" frameborder="0"></iframe>
