@@ -8,14 +8,14 @@
 
   <style>
     :root {
-      --bg:      #0e0e0e;
-      --surface: #161616;
-      --border:  #2a2a2a;
-      --text:    #e8e2d6;
-      --muted:   #6b6560;
-      --accent:  #f0a500;
-      --red:     #e04e2f;
-      --teal:    #2eb8a0;
+      --bg:      #f7f4ef;
+      --surface: #ffffff;
+      --border:  #ddd8ce;
+      --text:    #1a1714;
+      --muted:   #8a8278;
+      --accent:  #c47d00;
+      --red:     #c93d20;
+      --teal:    #1a8a76;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -96,7 +96,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(14,14,14,0.95);
+      background: rgba(247,244,239,0.97);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
       padding: 0.8rem 2rem;
@@ -173,7 +173,7 @@
       border: 1px solid var(--border);
       border-radius: 3px;
       padding: 1.5rem;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .viz-box object,
@@ -182,6 +182,21 @@
       width: 100%;
       border: none;
       border-radius: 2px;
+    }
+
+    /* RAWGraphs necesita más espacio vertical */
+    .viz-box-raw {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1.5rem;
+      overflow: visible;
+    }
+
+    .viz-box-raw object {
+      width: 100%;
+      min-height: 820px;
+      display: block;
     }
 
     /* ── INSIGHT ─────────────────────────────────── */
@@ -307,12 +322,12 @@
       cada tipo de servicio, revelando el peso relativo de internet,
       líneas móviles y servicios adicionales.
     </p>
-    <div class="viz-box">
+    <div class="viz-box-raw">
       <object
         type="image/svg+xml"
         data="https://fransierra1704.github.io/infovis/RAWTP1.svg"
         width="100%"
-        style="min-height:500px;">
+        style="min-height:820px; display:block;">
         <p style="color:var(--muted);font-size:0.8rem;text-align:center;padding:2rem;">
           Cargando visualización...
         </p>
