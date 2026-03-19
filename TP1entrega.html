@@ -3,426 +3,1002 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TP1 — Un año de facturas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <title>TP1 — Un año de facturas · Andrea Campagnoli</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&display=swap" rel="stylesheet">
 
   <style>
+    /* ════════════════════════════════════════
+       VARIABLES
+    ════════════════════════════════════════ */
     :root {
-      --bg:      #f7f4ef;
-      --surface: #ffffff;
-      --border:  #ddd8ce;
-      --text:    #1a1714;
-      --muted:   #8a8278;
-      --accent:  #c47d00;
-      --red:     #c93d20;
-      --teal:    #1a8a76;
+      --bg:        #faf8f4;
+      --ink:       #16120e;
+      --mid:       #5a5145;
+      --soft:      #b8afa2;
+      --line:      #e2ddd6;
+      --paper:     #ffffff;
+      --amber:     #d4830a;
+      --amber-lt:  #fdf3e0;
+      --red:       #bf3a22;
+      --teal:      #1f7a69;
+      --teal-lt:   #e4f4f1;
+      --blue:      #2555a0;
+      --serif:     'Cormorant Garamond', Georgia, serif;
+      --sans:      'DM Sans', system-ui, sans-serif;
+      --display:   'Bebas Neue', sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; font-size: 16px; }
 
     body {
       background: var(--bg);
-      color: var(--text);
-      font-family: 'Josefin Sans', sans-serif;
+      color: var(--ink);
+      font-family: var(--sans);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── HEADER ─────────────────────────────────── */
-    header {
-      padding: 5rem 2rem 4rem;
-      max-width: 1000px;
-      margin: 0 auto;
-      border-bottom: 1px solid var(--border);
-      animation: fadeUp 0.8s ease both;
+    /* ════════════════════════════════════════
+       ANIMACIONES
+    ════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes expandBar {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.5; }
     }
 
-    .header-tag {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1.2rem;
+    .fade-in    { animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) both; }
+    .fade-in-2  { animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.15s both; }
+    .fade-in-3  { animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.3s both; }
+    .fade-in-4  { animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.45s both; }
+
+    /* ════════════════════════════════════════
+       BARRA LATERAL DE PROGRESO
+    ════════════════════════════════════════ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: var(--amber);
+      z-index: 999;
+      transition: width 0.1s linear;
     }
 
-    header h1 {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(2.2rem, 5vw, 4rem);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    header h1 span { color: var(--accent); }
-
-    .header-sub {
-      margin-top: 1.2rem;
-      font-size: 0.9rem;
-      color: var(--muted);
-      max-width: 560px;
-      line-height: 1.8;
-      font-family: 'Josefin Sans', sans-serif;
-    }
-
-    .header-stats {
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 2.5rem;
-      flex-wrap: wrap;
-    }
-
-    .stat { display: flex; flex-direction: column; gap: 0.2rem; }
-
-    .stat-val {
-      font-family: 'Fraunces', serif;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .stat-val.red  { color: var(--red); }
-    .stat-val.teal { color: var(--teal); }
-
-    .stat-label {
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    /* ── NAV ─────────────────────────────────────── */
+    /* ════════════════════════════════════════
+       NAV STICKY
+    ════════════════════════════════════════ */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(247,244,239,0.97);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      padding: 0.8rem 2rem;
+      background: rgba(250,248,244,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
 
     .nav-inner {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 0 auto;
+      padding: 0 2rem;
       display: flex;
-      gap: 2rem;
       align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      gap: 1rem;
+    }
+
+    .nav-brand {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      letter-spacing: 0.06em;
+      color: var(--amber);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.2rem;
       overflow-x: auto;
     }
 
-    nav a {
+    .nav-links a {
       font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 2rem;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-links a:hover {
+      background: var(--amber-lt);
+      color: var(--amber);
+    }
+
+    /* ════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════ */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem 0;
+    }
+
+    .hero-kicker {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-kicker span {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    .hero-kicker::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: var(--amber);
+      flex-shrink: 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4rem;
+      align-items: end;
+      padding-bottom: 4rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+    }
+
+    .hero-title .amber { color: var(--amber); }
+
+    .hero-byline {
+      margin-top: 1.8rem;
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--mid);
+      max-width: 520px;
+      line-height: 1.75;
+      font-style: italic;
+      font-family: var(--serif);
+    }
+
+    .hero-meta {
+      font-size: 0.75rem;
+      color: var(--soft);
+      margin-top: 1rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* KPI column */
+    .hero-kpis {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 200px;
+    }
+
+    .kpi {
+      padding: 1.2rem 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .kpi:last-child { border-bottom: 1px solid var(--line); }
+
+    .kpi-val {
+      font-family: var(--display);
+      font-size: 2.4rem;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+    }
+
+    .kpi-val.amber { color: var(--amber); }
+    .kpi-val.red   { color: var(--red); }
+    .kpi-val.teal  { color: var(--teal); }
+
+    .kpi-label {
+      font-size: 0.68rem;
+      font-weight: 500;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s;
+      color: var(--soft);
+      margin-top: 0.25rem;
     }
 
-    nav a:hover { color: var(--accent); }
-
-    /* ── MAIN ────────────────────────────────────── */
-    main {
-      max-width: 1000px;
+    /* ════════════════════════════════════════
+       INTRO NARRATIVA
+    ════════════════════════════════════════ */
+    .intro {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 0 2rem 6rem;
+      padding: 4rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      border-bottom: 1px solid var(--line);
     }
 
-    /* ── SECCIÓN ─────────────────────────────────── */
-    .section {
-      padding: 4rem 0;
-      border-bottom: 1px solid var(--border);
-      animation: fadeUp 0.6s ease both;
+    .intro-text h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--ink);
+      margin-bottom: 1rem;
     }
 
-    .section:nth-child(1) { animation-delay: 0.1s; }
-    .section:nth-child(2) { animation-delay: 0.2s; }
-    .section:nth-child(3) { animation-delay: 0.3s; }
-    .section:nth-child(4) { animation-delay: 0.4s; }
-
-    .section-num {
-      font-size: 0.68rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
+    .intro-text p {
+      font-size: 0.92rem;
+      color: var(--mid);
+      line-height: 1.85;
+      font-weight: 300;
     }
 
-    .section h2 {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(1.3rem, 2.5vw, 1.9rem);
-      font-weight: 700;
-      line-height: 1.2;
-      color: var(--text);
-      margin-bottom: 0.6rem;
+    .intro-text p + p { margin-top: 0.8rem; }
+
+    /* mini timeline */
+    .mini-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
     }
 
-    .section-desc {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin-bottom: 1.8rem;
-      max-width: 620px;
-      line-height: 1.9;
-      font-family: 'Josefin Sans', sans-serif;
+    .mt-item {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--line);
     }
 
-    /* ── VIZ WRAPPER ─────────────────────────────── */
-    .viz-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
+    .mt-mes {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--mid);
+    }
+
+    .mt-bar-wrap {
+      height: 6px;
+      background: var(--line);
       border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .mt-bar {
+      height: 100%;
+      border-radius: 3px;
+      transform-origin: left;
+      animation: expandBar 1s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .mt-val {
+      font-family: var(--display);
+      font-size: 0.95rem;
+      color: var(--ink);
+      text-align: right;
+      min-width: 80px;
+      letter-spacing: 0.02em;
+    }
+
+    .mt-item.highlight .mt-val { color: var(--amber); }
+    .mt-item.highlight .mt-bar { background: var(--amber); }
+    .mt-item.peak .mt-val      { color: var(--red); }
+    .mt-item.peak .mt-bar      { background: var(--red); }
+
+    .mt-tag {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-left: 0.4rem;
+    }
+
+    /* ════════════════════════════════════════
+       SECCIONES DE GRÁFICOS
+    ════════════════════════════════════════ */
+    .chapter {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4.5rem 2rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chapter-full {
+      padding: 4.5rem 2rem;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .chapter-full .chapter-inner {
+      max-width: 100%;
+      padding: 0 2rem;
+    }
+
+    /* header de capítulo */
+    .ch-header {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2rem;
+      align-items: start;
+      margin-bottom: 2.5rem;
+    }
+
+    .ch-num {
+      font-family: var(--display);
+      font-size: 5rem;
+      line-height: 1;
+      color: var(--line);
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    .ch-meta {}
+
+    .ch-tool {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.4rem;
+    }
+
+    .ch-question {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 0.7rem;
+    }
+
+    .ch-desc {
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.85;
+      max-width: 600px;
+    }
+
+    /* viz container */
+    .viz-wrap {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 4px;
       padding: 1.5rem;
       overflow: visible;
     }
 
-    .viz-box object,
-    .viz-box iframe,
-    .viz-box > div {
-      width: 100%;
-      border: none;
-      border-radius: 2px;
-    }
-
-    /* RAWGraphs — 950x580 exacto, scroll horizontal si es necesario */
-    .viz-box-raw {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 3px;
+    .viz-wrap-raw {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 4px;
       padding: 1rem;
       overflow-x: auto;
       overflow-y: hidden;
-      width: 100%;
     }
 
-    .viz-box-raw object {
+    .viz-wrap-raw object {
       width: 950px;
       min-width: 950px;
       height: 580px;
       display: block;
     }
 
-    /* ── INSIGHT ─────────────────────────────────── */
-    .insight {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      margin-top: 1rem;
-      padding: 1rem 1.2rem;
-      background: var(--surface);
-      border-left: 3px solid var(--accent);
+    .viz-wrap-full {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1.5rem;
+      overflow: visible;
+      width: 100%;
     }
 
-    .insight-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    /* callout debajo del gráfico */
+    .callout {
+      display: grid;
+      grid-template-columns: 3px 1fr;
+      margin-top: 1.2rem;
+      background: var(--amber-lt);
+      border-radius: 0 4px 4px 0;
+      overflow: hidden;
+    }
 
-    .insight p { font-size: 0.78rem; color: var(--muted); line-height: 1.8; }
+    .callout-bar { background: var(--amber); }
 
-    .insight p strong { color: var(--text); }
+    .callout-body {
+      padding: 1rem 1.2rem;
+    }
 
-    /* ── FOOTER ──────────────────────────────────── */
+    .callout-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.3rem;
+    }
+
+    .callout-text {
+      font-size: 0.84rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    .callout-text strong { color: var(--ink); font-weight: 500; }
+
+    .callout.teal { background: var(--teal-lt); }
+    .callout.teal .callout-bar { background: var(--teal); }
+    .callout.teal .callout-label { color: var(--teal); }
+
+    /* ════════════════════════════════════════
+       CONCLUSIONES
+    ════════════════════════════════════════ */
+    .conclusions {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4.5rem 2rem;
+    }
+
+    .conclusions h2 {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 2.5rem;
+      line-height: 1;
+    }
+
+    .conclusions h2 span { color: var(--amber); }
+
+    .concl-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .concl-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1.5rem;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+
+    .concl-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+      transform: translateY(-3px);
+    }
+
+    .concl-icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .concl-title {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .concl-body {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.8;
+    }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 2rem;
-      max-width: 1000px;
+      border-top: 2px solid var(--ink);
+      background: var(--ink);
+      color: var(--bg);
+      padding: 2.5rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
-    footer p { font-size: 0.7rem; color: var(--muted); line-height: 1.8; }
-
-    /* ── ANIMACIÓN ───────────────────────────────── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .footer-brand {
+      font-family: var(--display);
+      font-size: 1.8rem;
+      letter-spacing: 0.06em;
+      color: var(--amber);
     }
 
-    @media (max-width: 600px) {
-      .header-stats { gap: 1.5rem; }
-      .nav-inner    { gap: 1.2rem; }
+    footer p {
+      font-size: 0.72rem;
+      color: var(--soft);
+      line-height: 1.8;
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .hero-grid      { grid-template-columns: 1fr; }
+      .hero-kpis      { flex-direction: row; flex-wrap: wrap; }
+      .intro          { grid-template-columns: 1fr; gap: 2.5rem; }
+      .ch-header      { grid-template-columns: 1fr; }
+      .ch-num         { font-size: 3rem; }
+      .concl-grid     { grid-template-columns: 1fr; }
+      .nav-brand      { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── HEADER ────────────────────────────────────── -->
-<header>
-  <div class="header-tag">TP1 · Visualización de Datos Personales · ECD 2025.A</div>
-  <h1>Un año de facturas:<br><span>¿cómo se comportó</span><br>mi gasto?</h1>
-  <p class="header-sub">
-    Exploración visual de 12 meses de facturas de telefonía e internet
-    (Personal Flow · Telecom Argentina). Abril 2025 — Marzo 2026.
-  </p>
-  <div class="header-stats">
-    <div class="stat">
-      <span class="stat-val">$1.051.272</span>
-      <span class="stat-label">Total gastado en 12 meses</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val red">+225%</span>
-      <span class="stat-label">Variación Abr 2025 → Mar 2026</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val teal">+109%</span>
-      <span class="stat-label">Mayor salto mensual (Nov 2025)</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val">12</span>
-      <span class="stat-label">Facturas analizadas</span>
-    </div>
-  </div>
-</header>
+<!-- barra de progreso de scroll -->
+<div id="progress-bar"></div>
 
-<!-- ── NAV ───────────────────────────────────────── -->
+<!-- ═══════════════════════════════════════════
+     NAV
+═══════════════════════════════════════════ -->
 <nav>
   <div class="nav-inner">
-    <a href="#flourish">01 · Evolución</a>
-    <a href="#raw">02 · Distribución</a>
-    <a href="#datawrapper">03 · Adicionales</a>
-    <a href="#powerbi">04 · Líneas móviles</a>
+    <span class="nav-brand">INFOVIS · TP1</span>
+    <div class="nav-links">
+      <a href="#cap1">01 · Evolución</a>
+      <a href="#cap2">02 · Flujo</a>
+      <a href="#cap3">03 · Adicionales</a>
+      <a href="#cap4">04 · Líneas móviles</a>
+      <a href="#conclusiones">Conclusiones</a>
+    </div>
   </div>
 </nav>
 
-<!-- ── CONTENIDO ─────────────────────────────────── -->
-<main>
-
-  <!-- 1. FLOURISH -->
-  <section class="section" id="flourish">
-    <div class="section-num">01 · Flourish</div>
-    <h2>¿Cuánto creció mi factura mensual a lo largo del año?</h2>
-    <p class="section-desc">
-      Evolución del total mensual facturado. Se distinguen dos etapas:
-      un crecimiento gradual de abril a octubre, y un salto abrupto en
-      noviembre al incorporarse cuatro líneas móviles al plan.
-    </p>
-    <div class="viz-box">
-      <div class="flourish-embed flourish-chart" data-src="visualisation/28128739">
-        <script src="https://public.flourish.studio/resources/embed.js"></script>
-        <noscript>
-          <img src="https://public.flourish.studio/visualisation/28128739/thumbnail" width="100%" alt="Evolución de factura mensual" />
-        </noscript>
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-kicker fade-in">
+    <span>TP1 · Visualización de Datos Personales · ECD 2025.A</span>
+  </div>
+  <div class="hero-grid fade-in-2">
+    <div>
+      <h1 class="hero-title">
+        UN AÑO<br>
+        DE<br>
+        <span class="amber">FACTURAS</span>
+      </h1>
+      <p class="hero-byline">
+        ¿Cómo se comportó mi gasto en telecomunicaciones
+        entre abril de 2025 y marzo de 2026? Una exploración
+        visual de 12 meses de facturas de Personal Flow.
+      </p>
+      <p class="hero-meta">FRANCISCO SIERRA · TELECOM ARGENTINA S.A.</p>
+    </div>
+    <div class="hero-kpis fade-in-3">
+      <div class="kpi">
+        <div class="kpi-val amber">$1.051.272</div>
+        <div class="kpi-label">Gasto total en 12 meses</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val red">+225%</div>
+        <div class="kpi-label">Variación Abr 2025 → Mar 2026</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val teal">+109%</div>
+        <div class="kpi-label">Mayor salto mensual (Nov 2025)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">12</div>
+        <div class="kpi-label">Facturas analizadas</div>
       </div>
     </div>
-    <div class="insight">
-      <span class="insight-icon">↑</span>
-      <p>
-        <strong>Noviembre 2025</strong> marca el quiebre más importante:
-        la factura saltó de <strong>$57.421 a $120.246</strong> en un solo mes
-        (+109%) al incorporarse 4 líneas móviles con Plan 4GB.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     INTRO + MINI TIMELINE
+═══════════════════════════════════════════ -->
+<section class="intro fade-in-4">
+  <div class="intro-text">
+    <h2>La historia en dos actos</h2>
+    <p>
+      Durante los primeros siete meses, el gasto creció de forma gradual y constante:
+      la inflación ajustaba mes a mes el costo del Plan Internet 300 MB + Flow Full,
+      y los servicios adicionales como el Pack Fútbol y Flow Box acompañaban ese ritmo.
+    </p>
+    <p>
+      Todo cambió en <strong>noviembre de 2025</strong>. La incorporación de cuatro
+      líneas móviles con Plan 4 GB duplicó la factura de un mes para el otro,
+      pasando de $57.421 a $120.246. Desde entonces el gasto se mantuvo en ese
+      nuevo nivel, con variaciones menores por roaming y paquetes de datos extra.
+    </p>
+    <p>
+      Las visualizaciones que siguen cuentan esa historia desde cuatro ángulos distintos:
+      evolución temporal, distribución por servicio, crecimiento de adicionales
+      y desglose por línea móvil.
+    </p>
+  </div>
+
+  <div class="mini-timeline">
+    <div class="mt-item">
+      <span class="mt-mes">Abr 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:30%; background:var(--teal); animation-delay:0.1s;"></div></div>
+      <span class="mt-val">$40.537</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">May 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:31%; background:var(--teal); animation-delay:0.15s;"></div></div>
+      <span class="mt-val">$41.815</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Jun 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:33%; background:var(--teal); animation-delay:0.2s;"></div></div>
+      <span class="mt-val">$43.593</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Jul 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:34%; background:var(--teal); animation-delay:0.25s;"></div></div>
+      <span class="mt-val">$45.039</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Ago 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:34%; background:var(--teal); animation-delay:0.3s;"></div></div>
+      <span class="mt-val">$45.859</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Sep 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:42%; background:var(--teal); animation-delay:0.35s;"></div></div>
+      <span class="mt-val">$56.330</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Oct 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:43%; background:var(--teal); animation-delay:0.4s;"></div></div>
+      <span class="mt-val">$57.422</span>
+    </div>
+    <div class="mt-item highlight">
+      <span class="mt-mes">Nov 2025 <span class="mt-tag">↑109%</span></span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:90%; animation-delay:0.45s;"></div></div>
+      <span class="mt-val">$120.246</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Dic 2025</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:88%; background:var(--blue); animation-delay:0.5s;"></div></div>
+      <span class="mt-val">$118.287</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Ene 2026</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:92%; background:var(--blue); animation-delay:0.55s;"></div></div>
+      <span class="mt-val">$123.338</span>
+    </div>
+    <div class="mt-item peak">
+      <span class="mt-mes">Feb 2026 <span class="mt-tag" style="color:var(--red);">MÁXIMO</span></span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:100%; animation-delay:0.6s;"></div></div>
+      <span class="mt-val">$133.459</span>
+    </div>
+    <div class="mt-item">
+      <span class="mt-mes">Mar 2026</span>
+      <div class="mt-bar-wrap"><div class="mt-bar" style="width:98%; background:var(--blue); animation-delay:0.65s;"></div></div>
+      <span class="mt-val">$131.608</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CAP 1 — FLOURISH
+═══════════════════════════════════════════ -->
+<section class="chapter" id="cap1">
+  <div class="ch-header">
+    <div class="ch-num">01</div>
+    <div class="ch-meta">
+      <div class="ch-tool">Visualización · Flourish</div>
+      <h2 class="ch-question">¿Cuánto creció mi factura mensual<br>a lo largo del año?</h2>
+      <p class="ch-desc">
+        Gráfico de línea que muestra la evolución del total mensual facturado.
+        Permite identificar con claridad el momento de quiebre en noviembre 2025
+        y la estabilización posterior en un nivel de gasto significativamente mayor.
       </p>
     </div>
-  </section>
+  </div>
 
-  <!-- 2. RAWGRAPHS -->
-  <section class="section" id="raw">
-    <div class="section-num">02 · RAWGraphs</div>
-    <h2>¿Cómo se distribuye mi gasto entre servicios cada mes?</h2>
-    <p class="section-desc">
-      Diagrama que muestra el flujo del gasto desde cada mes hacia
-      cada tipo de servicio, revelando el peso relativo de internet,
-      líneas móviles y servicios adicionales.
-    </p>
-    <div class="viz-box-raw">
-      <object
-        type="image/svg+xml"
-        data="https://fransierra1704.github.io/infovis/RAWTP1.svg"
-        width="950"
-        height="580"
-        style="width:950px; min-width:950px; height:580px; display:block;">
-        <p style="color:var(--muted);font-size:0.8rem;text-align:center;padding:2rem;">
-          Cargando visualización...
-        </p>
-      </object>
+  <div class="viz-wrap">
+    <div class="flourish-embed flourish-chart" data-src="visualisation/28128739">
+      <script src="https://public.flourish.studio/resources/embed.js"></script>
+      <noscript>
+        <img src="https://public.flourish.studio/visualisation/28128739/thumbnail" width="100%" alt="Evolución de factura mensual" />
+      </noscript>
     </div>
-    <div class="insight">
-      <span class="insight-icon">◈</span>
-      <p>
-        Los <strong>servicios adicionales</strong> (Pack Fútbol, Flow Box, GBs extra)
-        representaron entre el 40% y 45% del gasto total durante los primeros
-        7 meses, antes de que las líneas móviles tomaran protagonismo.
+  </div>
+
+  <div class="callout">
+    <div class="callout-bar"></div>
+    <div class="callout-body">
+      <div class="callout-label">📌 Punto de inflexión</div>
+      <p class="callout-text">
+        En <strong>noviembre 2025</strong> la factura saltó de $57.421 a $120.246 en un solo mes
+        (+109%), al incorporarse 4 líneas móviles con Plan 4GB y descuentos del 55–60%.
+        El descuento de conexión también se multiplicó por 12: de $1.000 a $12.000 mensual.
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- 3. DATAWRAPPER -->
-  <section class="section" id="datawrapper" style="max-width:100%; padding-left:2rem; padding-right:2rem;">
-    <div class="section-num">03 · DataWrapper</div>
-    <h2>¿En qué servicios extras gasto más cada mes?</h2>
-    <p class="section-desc">
-      Comparación mensual del costo de cada servicio adicional:
-      Pack Fútbol, Flow Box y paquetes de datos extra.
-      El Pack Fútbol fue el ítem de mayor crecimiento del período.
-    </p>
-    <div class="viz-box" style="width:100%; max-width:100%;">
-      <div style="min-height:665px" id="datawrapper-vis-FpP0S">
-        <script type="text/javascript" defer
-          src="https://datawrapper.dwcdn.net/FpP0S/embed.js"
-          charset="utf-8"
-          data-target="#datawrapper-vis-FpP0S">
-        </script>
-        <noscript>
-          <img src="https://datawrapper.dwcdn.net/FpP0S/full.png"
-               alt="COSTO MENSUAL POR SERVICIO" width="100%" />
-        </noscript>
+<!-- ═══════════════════════════════════════════
+     CAP 2 — RAWGRAPHS
+═══════════════════════════════════════════ -->
+<section class="chapter" id="cap2">
+  <div class="ch-header">
+    <div class="ch-num">02</div>
+    <div class="ch-meta">
+      <div class="ch-tool">Visualización · RAWGraphs — Diagrama Alluvial</div>
+      <h2 class="ch-question">¿Cómo fluye mi gasto desde<br>cada mes hacia cada tipo de servicio?</h2>
+      <p class="ch-desc">
+        El diagrama alluvial conecta cada mes con la categoría de servicio
+        correspondiente. El grosor de cada línea es proporcional al monto gastado,
+        revelando qué categorías dominan el gasto en cada período.
+      </p>
+    </div>
+  </div>
+
+  <div class="viz-wrap-raw">
+    <object
+      type="image/svg+xml"
+      data="https://fransierra1704.github.io/infovis/RAWTP1.svg"
+      width="950"
+      height="580"
+      style="width:950px; min-width:950px; height:580px; display:block;">
+      <p style="color:var(--soft);font-size:0.8rem;text-align:center;padding:2rem;">
+        Cargando visualización...
+      </p>
+    </object>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-bar"></div>
+    <div class="callout-body">
+      <div class="callout-label">📊 Cómo leer este gráfico</div>
+      <p class="callout-text">
+        Cada <strong>línea de color</strong> representa un mes del año. Su grosor indica
+        cuánto dinero fluyó hacia cada categoría (SERVICIO_HOGAR, LINEA_MOVIL, SERVICIO_ADICIONAL).
+        A partir de noviembre, aparece la categoría <strong>LINEA_MOVIL</strong> como una de
+        las más voluminosas, modificando completamente la estructura del gasto.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CAP 3 — DATAWRAPPER (full width)
+═══════════════════════════════════════════ -->
+<div class="chapter-full" id="cap3">
+  <div class="chapter-full" style="border:none; padding:0;">
+    <div style="max-width:1100px; margin:0 auto; padding:0 2rem 2.5rem;">
+      <div class="ch-header">
+        <div class="ch-num">03</div>
+        <div class="ch-meta">
+          <div class="ch-tool">Visualización · DataWrapper</div>
+          <h2 class="ch-question">¿En qué servicios extras<br>gasté más cada mes?</h2>
+          <p class="ch-desc">
+            Comparación mensual del costo de cada servicio adicional:
+            Pack Fútbol, Flow Box y paquetes de datos extra (GB adicionales).
+            El Pack Fútbol fue el ítem de mayor crecimiento sostenido del año.
+          </p>
+        </div>
       </div>
     </div>
-    <div class="insight">
-      <span class="insight-icon">$</span>
-      <p>
-        El <strong>Pack Fútbol</strong> pasó de $14.100 (abril 2025) a $21.490
-        (marzo 2026), un incremento del <strong>+52%</strong> en el año.
-        Flow Box creció un +38% en el mismo período.
+
+    <div style="padding: 0 2rem;">
+      <div class="viz-wrap-full">
+        <div style="min-height:665px" id="datawrapper-vis-FpP0S">
+          <script type="text/javascript" defer
+            src="https://datawrapper.dwcdn.net/FpP0S/embed.js"
+            charset="utf-8"
+            data-target="#datawrapper-vis-FpP0S">
+          </script>
+          <noscript>
+            <img src="https://datawrapper.dwcdn.net/FpP0S/full.png"
+                 alt="COSTO MENSUAL POR SERVICIO" width="100%" />
+          </noscript>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:1100px; margin:0 auto; padding:0 2rem;">
+      <div class="callout" style="margin-top:1.2rem;">
+        <div class="callout-bar"></div>
+        <div class="callout-body">
+          <div class="callout-label">📈 Crecimiento de adicionales</div>
+          <p class="callout-text">
+            El <strong>Pack Fútbol</strong> pasó de $14.100 a $21.490 entre abril 2025 y marzo 2026 (+52%).
+            <strong>Flow Box</strong> creció de $2.600 a $3.580 (+38%). Estos servicios,
+            que parecen pequeños, suman más de <strong>$250.000 acumulados en el año</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CAP 4 — POWER BI
+═══════════════════════════════════════════ -->
+<section class="chapter" id="cap4">
+  <div class="ch-header">
+    <div class="ch-num">04</div>
+    <div class="ch-meta">
+      <div class="ch-tool">Visualización · Power BI</div>
+      <h2 class="ch-question">¿Cuánto paga cada línea móvil<br>y qué incluye su costo?</h2>
+      <p class="ch-desc">
+        Desglose por línea móvil desde noviembre 2025: abono del plan base,
+        servicios adicionales asignados y consumos variables (llamadas en roaming).
+        Permite comparar el costo real de cada número mes a mes.
       </p>
     </div>
-  </section>
+  </div>
 
-  <!-- 4. POWER BI -->
-  <section class="section" id="powerbi">
-    <div class="section-num">04 · Power BI</div>
-    <h2>¿Cuánto paga cada línea móvil y qué incluye?</h2>
-    <p class="section-desc">
-      Desglose por línea móvil desde noviembre 2025: abono del plan,
-      servicios adicionales y consumos variables (roaming).
-      La línea (11) 4915-3965 registró roaming en Paraguay en febrero 2026.
-    </p>
-    <div class="viz-box">
-      <!-- Reemplazá MI_LINK_POWERBI con tu enlace publicado en Power BI Service -->
-      <iframe
-        src="MI_LINK_POWERBI"
-        width="100%"
-        height="500"
-        frameborder="0"
-        allowfullscreen="true">
-      </iframe>
-    </div>
-    <div class="insight">
-      <span class="insight-icon">📱</span>
-      <p>
-        Las 4 líneas tienen el <strong>Plan 4GB con doble de gigas automático</strong>.
-        Los descuentos aplicados varían entre 55% y 60% según la línea,
-        con vencimientos escalonados a lo largo de 2026.
+  <div class="viz-wrap">
+    <!-- Reemplazá MI_LINK_POWERBI con tu enlace publicado en Power BI Service -->
+    <iframe
+      src="MI_LINK_POWERBI"
+      width="100%"
+      height="520"
+      frameborder="0"
+      allowfullscreen="true"
+      style="border:none;">
+    </iframe>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-bar"></div>
+    <div class="callout-body">
+      <div class="callout-label">📱 Detalle por línea</div>
+      <p class="callout-text">
+        Las 4 líneas tienen el <strong>Plan 4GB con beneficio de doble de gigas automático</strong>.
+        Los descuentos varían entre 55% y 60% según la línea. En <strong>febrero 2026</strong>,
+        la línea (11) 4915-3965 generó $6.766 adicionales por llamadas en roaming desde Paraguay.
+        En <strong>marzo 2026</strong>, la línea (11) 6900-4409 registró $475 por roaming en Panamá.
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
-</main>
+<!-- ═══════════════════════════════════════════
+     CONCLUSIONES
+═══════════════════════════════════════════ -->
+<section class="conclusions" id="conclusiones">
+  <h2>LO QUE <span>LOS DATOS</span> DICEN</h2>
 
-<!-- ── FOOTER ─────────────────────────────────────── -->
+  <div class="concl-grid">
+    <div class="concl-card">
+      <span class="concl-icon">📈</span>
+      <div class="concl-title">Un quiebre, no una tendencia</div>
+      <p class="concl-body">
+        El crecimiento del 225% no fue gradual: el 85% del aumento ocurrió
+        en un solo mes. Noviembre 2025 es el evento explicativo de toda la serie.
+        Sin ese salto, la variación anual habría sido de solo un 42%.
+      </p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">📡</span>
+      <div class="concl-title">El peso de las líneas móviles</div>
+      <p class="concl-body">
+        Desde su incorporación, las 4 líneas móviles representan entre el 55%
+        y 60% del gasto mensual total. El servicio de internet, que era el ítem
+        principal, pasó a ser secundario en términos relativos.
+      </p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">⚽</span>
+      <div class="concl-title">Los adicionales no son opcionales</div>
+      <p class="concl-body">
+        Pack Fútbol, Flow Box y GBs extra suman en promedio $22.000 mensuales
+        en los últimos meses. En el año acumularon más de $250.000 —
+        equivalente a más de 2 facturas mensuales completas de los primeros meses.
+      </p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">🌍</span>
+      <div class="concl-title">El roaming como variable de riesgo</div>
+      <p class="concl-body">
+        Dos meses del año registraron consumos de roaming internacional:
+        Paraguay ($6.766 en febrero 2026) y Panamá ($475 en marzo 2026).
+        Aunque son montos acotados, representan costos imprevistos difíciles de controlar.
+      </p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">🔖</span>
+      <div class="concl-title">Los descuentos son temporales</div>
+      <p class="concl-body">
+        Todos los descuentos (55–60%) tienen fecha de vencimiento entre
+        marzo y abril de 2026. Al expirar, el costo podría aumentar entre
+        un 30% y 40% adicional sobre los valores actuales.
+      </p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">💡</span>
+      <div class="concl-title">Visualizar = entender el gasto</div>
+      <p class="concl-body">
+        Sin la exploración visual, estos patrones serían casi invisibles
+        en las facturas individuales. La visualización de datos transforma
+        12 PDFs en una historia clara, comparable y accionable.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════ -->
 <footer>
-  <p>
-    Datos: Facturas Telecom Argentina S.A. · CUIT 30-63945373-8<br>
-    Procesado con R + Python · 12 facturas · Abr 2025 — Mar 2026
-  </p>
-  <p style="text-align:right;">
-    TP1 · Visualización de Datos Personales<br>
-    infovis · ECD 2025.A
-  </p>
+  <div class="footer-inner">
+    <div class="footer-brand">INFOVIS · TP1</div>
+    <p>
+      Datos: Facturas Telecom Argentina S.A. · CUIT 30-63945373-8<br>
+      Procesado con R + Python · 12 facturas · Abril 2025 — Marzo 2026
+    </p>
+    <p style="text-align:right;">
+      Visualización de Datos Personales<br>
+      ECD 2025.A · Francisco Sierra
+    </p>
+  </div>
 </footer>
+
+<!-- ═══════════════════════════════════════════
+     JS
+═══════════════════════════════════════════ -->
+<script>
+  /* barra de progreso de scroll */
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress  = (scrollTop / docHeight) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+  });
+</script>
 
 </body>
 </html>
