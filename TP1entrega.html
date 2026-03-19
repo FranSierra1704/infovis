@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TP1 — Un año de facturas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -25,14 +25,14 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: 'Josefin Sans', sans-serif;
       line-height: 1.6;
     }
 
     /* ── HEADER ─────────────────────────────────── */
     header {
       padding: 5rem 2rem 4rem;
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
       border-bottom: 1px solid var(--border);
       animation: fadeUp 0.8s ease both;
@@ -47,7 +47,7 @@
     }
 
     header h1 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', serif;
       font-size: clamp(2.2rem, 5vw, 4rem);
       font-weight: 900;
       line-height: 1.1;
@@ -59,10 +59,11 @@
 
     .header-sub {
       margin-top: 1.2rem;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       color: var(--muted);
       max-width: 560px;
       line-height: 1.8;
+      font-family: 'Josefin Sans', sans-serif;
     }
 
     .header-stats {
@@ -75,7 +76,7 @@
     .stat { display: flex; flex-direction: column; gap: 0.2rem; }
 
     .stat-val {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', serif;
       font-size: 1.8rem;
       font-weight: 700;
       color: var(--accent);
@@ -103,7 +104,7 @@
     }
 
     .nav-inner {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
       display: flex;
       gap: 2rem;
@@ -125,7 +126,7 @@
 
     /* ── MAIN ────────────────────────────────────── */
     main {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 0 2rem 6rem;
     }
@@ -151,7 +152,7 @@
     }
 
     .section h2 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Fraunces', serif;
       font-size: clamp(1.3rem, 2.5vw, 1.9rem);
       font-weight: 700;
       line-height: 1.2;
@@ -160,11 +161,12 @@
     }
 
     .section-desc {
-      font-size: 0.8rem;
+      font-size: 0.88rem;
       color: var(--muted);
       margin-bottom: 1.8rem;
       max-width: 620px;
       line-height: 1.9;
+      font-family: 'Josefin Sans', sans-serif;
     }
 
     /* ── VIZ WRAPPER ─────────────────────────────── */
@@ -184,18 +186,21 @@
       border-radius: 2px;
     }
 
-    /* RAWGraphs necesita más espacio vertical */
+    /* RAWGraphs — 950x580 exacto, scroll horizontal si es necesario */
     .viz-box-raw {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 3px;
-      padding: 1.5rem;
-      overflow: visible;
+      padding: 1rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      width: 100%;
     }
 
     .viz-box-raw object {
-      width: 100%;
-      min-height: 820px;
+      width: 950px;
+      min-width: 950px;
+      height: 580px;
       display: block;
     }
 
@@ -220,7 +225,7 @@
     footer {
       border-top: 1px solid var(--border);
       padding: 2rem;
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -326,8 +331,9 @@
       <object
         type="image/svg+xml"
         data="https://fransierra1704.github.io/infovis/RAWTP1.svg"
-        width="100%"
-        style="min-height:820px; display:block;">
+        width="950"
+        height="580"
+        style="width:950px; min-width:950px; height:580px; display:block;">
         <p style="color:var(--muted);font-size:0.8rem;text-align:center;padding:2rem;">
           Cargando visualización...
         </p>
@@ -344,7 +350,7 @@
   </section>
 
   <!-- 3. DATAWRAPPER -->
-  <section class="section" id="datawrapper">
+  <section class="section" id="datawrapper" style="max-width:100%; padding-left:2rem; padding-right:2rem;">
     <div class="section-num">03 · DataWrapper</div>
     <h2>¿En qué servicios extras gasto más cada mes?</h2>
     <p class="section-desc">
@@ -352,7 +358,7 @@
       Pack Fútbol, Flow Box y paquetes de datos extra.
       El Pack Fútbol fue el ítem de mayor crecimiento del período.
     </p>
-    <div class="viz-box">
+    <div class="viz-box" style="width:100%; max-width:100%;">
       <div style="min-height:665px" id="datawrapper-vis-FpP0S">
         <script type="text/javascript" defer
           src="https://datawrapper.dwcdn.net/FpP0S/embed.js"
