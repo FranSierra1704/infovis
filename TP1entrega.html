@@ -4,32 +4,404 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TP1 — Un año de facturas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:      #0e0e0e;
+      --surface: #161616;
+      --border:  #2a2a2a;
+      --text:    #e8e2d6;
+      --muted:   #6b6560;
+      --accent:  #f0a500;
+      --red:     #e04e2f;
+      --teal:    #2eb8a0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    header {
+      padding: 5rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--border);
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .header-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    header h1 span { color: var(--accent); }
+
+    .header-sub {
+      margin-top: 1.2rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.8;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+
+    .stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-val.red  { color: var(--red); }
+    .stat-val.teal { color: var(--teal); }
+
+    .stat-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── NAV ─────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14,14,14,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 2rem;
+    }
+
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    nav a {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--accent); }
+
+    /* ── MAIN ────────────────────────────────────── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+
+    /* ── SECCIÓN ─────────────────────────────────── */
+    .section {
+      padding: 4rem 0;
+      border-bottom: 1px solid var(--border);
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .section:nth-child(1) { animation-delay: 0.1s; }
+    .section:nth-child(2) { animation-delay: 0.2s; }
+    .section:nth-child(3) { animation-delay: 0.3s; }
+    .section:nth-child(4) { animation-delay: 0.4s; }
+
+    .section-num {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.8rem;
+      max-width: 620px;
+      line-height: 1.9;
+    }
+
+    /* ── VIZ WRAPPER ─────────────────────────────── */
+    .viz-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .viz-box object,
+    .viz-box iframe,
+    .viz-box > div {
+      width: 100%;
+      border: none;
+      border-radius: 2px;
+    }
+
+    /* ── INSIGHT ─────────────────────────────────── */
+    .insight {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-top: 1rem;
+      padding: 1rem 1.2rem;
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+    }
+
+    .insight-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+    .insight p { font-size: 0.78rem; color: var(--muted); line-height: 1.8; }
+
+    .insight p strong { color: var(--text); }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer p { font-size: 0.7rem; color: var(--muted); line-height: 1.8; }
+
+    /* ── ANIMACIÓN ───────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .header-stats { gap: 1.5rem; }
+      .nav-inner    { gap: 1.2rem; }
+    }
+  </style>
 </head>
 <body>
-  <h1>TP1 — Un año de facturas: ¿Cómo se comportó mi gasto?</h1>
-  <!-- ── 1. Flourish ──────────────────────────────── -->
-  <h2>¿Cuánto creció mi factura mensual a lo largo del año?</h2>
-  <div class="flourish-embed flourish-chart" data-src="visualisation/28128739">
-    <script src="https://public.flourish.studio/resources/embed.js"></script>
-    <noscript>
-      <img src="https://public.flourish.studio/visualisation/28128739/thumbnail" width="100%" alt="visualization" />
-    </noscript>
+
+<!-- ── HEADER ────────────────────────────────────── -->
+<header>
+  <div class="header-tag">TP1 · Visualización de Datos Personales · ECD 2025.A</div>
+  <h1>Un año de facturas:<br><span>¿cómo se comportó</span><br>mi gasto?</h1>
+  <p class="header-sub">
+    Exploración visual de 12 meses de facturas de telefonía e internet
+    (Personal Flow · Telecom Argentina). Abril 2025 — Marzo 2026.
+  </p>
+  <div class="header-stats">
+    <div class="stat">
+      <span class="stat-val">$1.051.272</span>
+      <span class="stat-label">Total gastado en 12 meses</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val red">+225%</span>
+      <span class="stat-label">Variación Abr 2025 → Mar 2026</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val teal">+109%</span>
+      <span class="stat-label">Mayor salto mensual (Nov 2025)</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">12</span>
+      <span class="stat-label">Facturas analizadas</span>
+    </div>
   </div>
-  <!-- ──2. RAWGraphs ─────────────────────────────── -->
-  <h2>¿Cómo se distribuye mi gasto entre servicios cada mes?</h2>
-  <object type="image/svg+xml" data="https://fransierra1704.github.io/infovis/RAWTP1.svg" width="100%"></object>
-  <!-- ── 3. DataWrapper ───────────────────────────── -->
-  <h2>¿En qué servicios extras gasto más cada mes?</h2>
-  <div style="min-height:665px" id="datawrapper-vis-FpP0S">
-    <script type="text/javascript" defer src="https://datawrapper.dwcdn.net/FpP0S/embed.js" charset="utf-8" data-target="#datawrapper-vis-FpP0S"></script>
-    <noscript>
-      <img src="https://datawrapper.dwcdn.net/FpP0S/full.png" alt="COSTO MENSUAL POR SERVICIO (Columnas agrupadas)" />
-    </noscript>
+</header>
+
+<!-- ── NAV ───────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#flourish">01 · Evolución</a>
+    <a href="#raw">02 · Distribución</a>
+    <a href="#datawrapper">03 · Adicionales</a>
+    <a href="#powerbi">04 · Líneas móviles</a>
   </div>
-  <!-- ── 4. Power BI ──────────────────────────────── -->
-  <h2>¿Cuánto paga cada línea móvil y qué incluye?</h2>
-  <!-- Reemplazare MI_LINK_POWERBI con el enlace de tu reporte publicado -->
-  <iframe src="MI_LINK_POWERBI" width="100%" height="500" frameborder="0" allowFullScreen="true"></iframe>
- 
+</nav>
+
+<!-- ── CONTENIDO ─────────────────────────────────── -->
+<main>
+
+  <!-- 1. FLOURISH -->
+  <section class="section" id="flourish">
+    <div class="section-num">01 · Flourish</div>
+    <h2>¿Cuánto creció mi factura mensual a lo largo del año?</h2>
+    <p class="section-desc">
+      Evolución del total mensual facturado. Se distinguen dos etapas:
+      un crecimiento gradual de abril a octubre, y un salto abrupto en
+      noviembre al incorporarse cuatro líneas móviles al plan.
+    </p>
+    <div class="viz-box">
+      <div class="flourish-embed flourish-chart" data-src="visualisation/28128739">
+        <script src="https://public.flourish.studio/resources/embed.js"></script>
+        <noscript>
+          <img src="https://public.flourish.studio/visualisation/28128739/thumbnail" width="100%" alt="Evolución de factura mensual" />
+        </noscript>
+      </div>
+    </div>
+    <div class="insight">
+      <span class="insight-icon">↑</span>
+      <p>
+        <strong>Noviembre 2025</strong> marca el quiebre más importante:
+        la factura saltó de <strong>$57.421 a $120.246</strong> en un solo mes
+        (+109%) al incorporarse 4 líneas móviles con Plan 4GB.
+      </p>
+    </div>
+  </section>
+
+  <!-- 2. RAWGRAPHS -->
+  <section class="section" id="raw">
+    <div class="section-num">02 · RAWGraphs</div>
+    <h2>¿Cómo se distribuye mi gasto entre servicios cada mes?</h2>
+    <p class="section-desc">
+      Diagrama que muestra el flujo del gasto desde cada mes hacia
+      cada tipo de servicio, revelando el peso relativo de internet,
+      líneas móviles y servicios adicionales.
+    </p>
+    <div class="viz-box">
+      <object
+        type="image/svg+xml"
+        data="https://fransierra1704.github.io/infovis/RAWTP1.svg"
+        width="100%"
+        style="min-height:500px;">
+        <p style="color:var(--muted);font-size:0.8rem;text-align:center;padding:2rem;">
+          Cargando visualización...
+        </p>
+      </object>
+    </div>
+    <div class="insight">
+      <span class="insight-icon">◈</span>
+      <p>
+        Los <strong>servicios adicionales</strong> (Pack Fútbol, Flow Box, GBs extra)
+        representaron entre el 40% y 45% del gasto total durante los primeros
+        7 meses, antes de que las líneas móviles tomaran protagonismo.
+      </p>
+    </div>
+  </section>
+
+  <!-- 3. DATAWRAPPER -->
+  <section class="section" id="datawrapper">
+    <div class="section-num">03 · DataWrapper</div>
+    <h2>¿En qué servicios extras gasto más cada mes?</h2>
+    <p class="section-desc">
+      Comparación mensual del costo de cada servicio adicional:
+      Pack Fútbol, Flow Box y paquetes de datos extra.
+      El Pack Fútbol fue el ítem de mayor crecimiento del período.
+    </p>
+    <div class="viz-box">
+      <div style="min-height:665px" id="datawrapper-vis-FpP0S">
+        <script type="text/javascript" defer
+          src="https://datawrapper.dwcdn.net/FpP0S/embed.js"
+          charset="utf-8"
+          data-target="#datawrapper-vis-FpP0S">
+        </script>
+        <noscript>
+          <img src="https://datawrapper.dwcdn.net/FpP0S/full.png"
+               alt="COSTO MENSUAL POR SERVICIO" width="100%" />
+        </noscript>
+      </div>
+    </div>
+    <div class="insight">
+      <span class="insight-icon">$</span>
+      <p>
+        El <strong>Pack Fútbol</strong> pasó de $14.100 (abril 2025) a $21.490
+        (marzo 2026), un incremento del <strong>+52%</strong> en el año.
+        Flow Box creció un +38% en el mismo período.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. POWER BI -->
+  <section class="section" id="powerbi">
+    <div class="section-num">04 · Power BI</div>
+    <h2>¿Cuánto paga cada línea móvil y qué incluye?</h2>
+    <p class="section-desc">
+      Desglose por línea móvil desde noviembre 2025: abono del plan,
+      servicios adicionales y consumos variables (roaming).
+      La línea (11) 4915-3965 registró roaming en Paraguay en febrero 2026.
+    </p>
+    <div class="viz-box">
+      <!-- Reemplazá MI_LINK_POWERBI con tu enlace publicado en Power BI Service -->
+      <iframe
+        src="MI_LINK_POWERBI"
+        width="100%"
+        height="500"
+        frameborder="0"
+        allowfullscreen="true">
+      </iframe>
+    </div>
+    <div class="insight">
+      <span class="insight-icon">📱</span>
+      <p>
+        Las 4 líneas tienen el <strong>Plan 4GB con doble de gigas automático</strong>.
+        Los descuentos aplicados varían entre 55% y 60% según la línea,
+        con vencimientos escalonados a lo largo de 2026.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────── -->
+<footer>
+  <p>
+    Datos: Facturas Telecom Argentina S.A. · CUIT 30-63945373-8<br>
+    Procesado con R + Python · 12 facturas · Abr 2025 — Mar 2026
+  </p>
+  <p style="text-align:right;">
+    TP1 · Visualización de Datos Personales<br>
+    infovis · ECD 2025.A
+  </p>
+</footer>
+
 </body>
 </html>
