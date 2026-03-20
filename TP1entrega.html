@@ -417,9 +417,9 @@
     }
 
     .viz-wrap-raw object {
-      width: 950px;
-      min-width: 950px;
-      height: 580px;
+      width: 800px;
+      min-width: 800px;
+      height: 800px;
       display: block;
     }
 
@@ -775,9 +775,11 @@
     <div class="ch-num">02</div>
     <div class="ch-meta">
       <div class="ch-tool">Visualización · RAWGraphs — Diagrama Alluvial</div>
-      <h2 class="ch-question">¿Cómo se comparto mi gasto<br>cada mes y con cada tipo de servicio?</h2>
+      <h2 class="ch-question">¿Cómo fluye mi gasto desde<br>cada mes hacia cada tipo de servicio?</h2>
       <p class="ch-desc">
-        En el siguiente diagrama vemos que servicios se usaron y en que cantidad mes a mes.
+        El diagrama alluvial conecta cada mes con la categoría de servicio
+        correspondiente. El grosor de cada línea es proporcional al monto gastado,
+        revelando qué categorías dominan el gasto en cada período.
       </p>
     </div>
   </div>
@@ -786,9 +788,9 @@
     <object
       type="image/svg+xml"
       data="https://fransierra1704.github.io/infovis/RAWTP1.svg"
-      width="950"
-      height="580"
-      style="width:950px; min-width:950px; height:580px; display:block;">
+      width="800"
+      height="800"
+      style="width:800px; min-width:800px; height:800px; display:block;">
       <p style="color:var(--soft);font-size:0.8rem;text-align:center;padding:2rem;">
         Cargando visualización...
       </p>
@@ -800,7 +802,7 @@
     <div class="callout-body">
       <div class="callout-label">📊 Cómo leer este gráfico</div>
       <p class="callout-text">
-       Es una <strong>matriz de cuadrados</strong>: el eje vertical muestra los 12 meses del año
+        Es una <strong>matriz de burbujas</strong>: el eje vertical muestra los 12 meses del año
         y el eje horizontal los servicios contratados. Cada cuadrado naranja representa
         la intersección entre un mes y un servicio — cuanto <strong>más grande el cuadrado,
         mayor fue el gasto</strong> en ese servicio ese mes. A partir de noviembre 2025
@@ -821,7 +823,7 @@
         <div class="ch-num">03</div>
         <div class="ch-meta">
           <div class="ch-tool">Visualización · DataWrapper</div>
-          <h2 class="ch-question">¿En que servicios extras<br>gaste más cada mes?</h2>
+          <h2 class="ch-question">¿En qué servicios extras<br>gasté más cada mes?</h2>
           <p class="ch-desc">
             Comparación mensual del costo de cada servicio adicional:
             Pack Fútbol, Flow Box y paquetes de datos extra (GB adicionales).
@@ -977,7 +979,7 @@
   <div class="footer-inner">
     <div class="footer-brand">INFOVIS · TP1</div>
     <p>
-      Datos: Facturas Telecom Argentina S.A.<br>
+      Datos: Facturas Telecom Argentina S.A. · CUIT <br>
       Procesado con R + Python · 12 facturas · Abril 2025 — Marzo 2026
     </p>
     <p style="text-align:right;">
